@@ -1,0 +1,35 @@
+#! /usr/bin/env bash
+set -e
+
+function flash() {
+    particle flash --usb --yes "$1"
+}
+
+node ./serial-trigger.js
+sleep 5
+
+if [[ -n $(lsusb -d 2b04:d006) ]]; then
+    echo "Flashing Photon..."
+    echo "Flashing System 1 file..."
+    flash system-part1-photon.bin
+    echo "Flashing System 2 file..."
+    flash system-part2-photon.bin
+    echo "Flashing Firmware file..."
+    flash brewblox-photon.bin
+    sleep 5
+    exit
+fi
+
+if [[ -n $(lsusb -d 2b04:d008) ]]; then
+    echo "Flashing P1..."
+    echo -n "Flashing System 1 file..."
+    flash system-part1-p1.bin
+    echo -n "Flashing System 2 file..."
+    flash system-part2-p1.bin
+    echo -n "Flashing Firmware file..."
+    flash brewblox-p1.bin
+    sleep 5
+    exit
+fi
+
+echo "No compatible USB devices found"
